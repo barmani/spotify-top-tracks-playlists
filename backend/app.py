@@ -14,8 +14,10 @@ caches_folder = './.spotify_caches/'
 if not os.path.exists(caches_folder):
     os.makedirs(caches_folder)
 
+
 def session_cache_path():
     return caches_folder + session.get('uuid')
+
 
 @app.route('/')
 def index():
@@ -24,8 +26,8 @@ def index():
         session['uuid'] = str(uuid.uuid4())
 
     auth_manager = spotipy.oauth2.SpotifyOAuth(scope='user-read-currently-playing playlist-modify-private user-top-read',
-                                                cache_path=session_cache_path(),
-                                                show_dialog=True)
+                                               cache_path=session_cache_path(),
+                                               show_dialog=True)
 
     if request.args.get("code"):
         # Step 3. Being redirected from Spotify auth page
@@ -43,6 +45,7 @@ def index():
            f'<a href="/top_tracks">Top Tracks</a>' \
 
 
+
 @app.route('/sign_out')
 def sign_out():
     os.remove(session_cache_path())
@@ -51,8 +54,9 @@ def sign_out():
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
         os.remove(session_cache_path())
     except OSError as e:
-        print ("Error: %s - %s." % (e.filename, e.strerror))
+        print("Error: %s - %s." % (e.filename, e.strerror))
     return redirect('/')
+
 
 @app.route('/top_tracks')
 def get_top_tracks():
@@ -69,6 +73,7 @@ def get_top_tracks():
         'med_term': extract_top_track_information(top_med_term),
         'long_term': extract_top_track_information(top_long_term)
     }
+
 
 def extract_top_track_information(tracks_data):
     extracted_data = []
@@ -92,4 +97,4 @@ def current_user():
 
 
 if __name__ == '__main__':
-	app.run(threaded=True, port=int(os.environ.get("PORT", 5000)))
+    app.run(threaded=True, port=int(os.environ.get("PORT", 5000)))
